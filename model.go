@@ -1,7 +1,27 @@
 package mpesa
 
+import "fmt"
+
 type authResponse struct {
+	RequestId    *string `json:"requestId"`
+	ErrorCode    *string `json:"errorCode"`
+	ErrorMessage *string `json:"errorMessage"`
+
+	// Access token to access other APIs
 	AccessToken string `json:"access_token"`
+	// Token expiry time in seconds.
+	ExpiresIn string `json:"expires_in"`
+}
+
+func (r authResponse) Error() string {
+	return fmt.Sprintf("code %s - %s", sp(r.ErrorCode), sp(r.ErrorMessage))
+}
+
+func sp(p *string) string {
+	if p == nil {
+		return ""
+	}
+	return *p
 }
 
 // C2B is a model
@@ -87,8 +107,18 @@ type BalanceInquiry struct {
 
 // RegisterURL is a model
 type C2BRegisterURL struct {
-	ShortCode       string
-	ResponseType    string
+	// The short code of the organization.
+	ShortCode string
+	// Default response type for timeout. Incase a tranaction times out, Mpesa will by default Complete or Cancel the transaction.
+	ResponseType string
+	// Confirmation URL for the client.
 	ConfirmationURL string
-	ValidationURL   string
+	// Validation URL for the client.
+	ValidationURL string
+}
+
+type C2BRegisterURLResponse struct {
+	OriginatorConverstionID string `json:"originatorConverstionId"`
+	ConversationID          string `json:"conversationId"`
+	ResponseDescription     string `json:"responseDescription"`
 }

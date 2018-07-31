@@ -4,71 +4,122 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
-	"strings"
+	"strconv"
 	"time"
 )
 
-// Env is the environment type
-type Env string
+const (
+	SandboxEndpoint    = "https://sandbox.safaricom.co.ke/"
+	ProductionEndpoint = "https://api.safaricom.co.ke/"
+)
 
 const (
-	// DEV is the development env tag
-
-	// SANDBOX is the sandbox env tag
-	SANDBOX = iota
-	// PRODUCTION is the production env tag
-	PRODUCTION
+	authHeader        = "Authorization"
+	contentTypeHeader = "Content-Type"
+	defaultTokenLive  = time.Minute * 45
 )
+
+var ErrTokenIsExpired = errors.New("token was expired")
 
 // Service is an Mpesa Service
 type Service struct {
-	AppKey    string
-	AppSecret string
-	Env       int
+	appKey    string
+	appSecret string
+	endpoint  string
+
+	authHeader string
+	// The OAuth access token expires after an hour, after which,
+	// you will need to generate another access token.
+	// On a production app, use a base64 library of the programming language you are using to build your app to get
+	// the Basic Auth string that you will then use to invoke our OAuth API to get an access token.
+	token      string
+	checkPoint time.Time
+
+	HTTPClient        *http.Client
+	TokenLiveDuration time.Duration
 }
 
 // New return a new Mpesa Service
-func New(appKey, appSecret string, env int) (Service, error) {
-	return Service{appKey, appSecret, env}, nil
+func New(key, secret string, endpoint string) *Service {
+	if endpoint == "" {
+		endpoint = SandboxEndpoint
+	}
+	b := []byte(key + ":" + secret)
+	encoded := base64.StdEncoding.EncodeToString(b)
+	serviceAuthHeader := "Basic " + encoded
+
+	return &Service{
+		appKey:            key,
+		appSecret:         secret,
+		endpoint:          endpoint,
+		authHeader:        serviceAuthHeader,
+		TokenLiveDuration: defaultTokenLive,
+	}
 }
 
-//Generate Mpesa Daraja Access Token
-func (s Service) authenticate() (string, error) {
-	b := []byte(s.AppKey + ":" + s.AppSecret)
-	encoded := base64.StdEncoding.EncodeToString(b)
-
-	url := s.baseURL() + "oauth/v1/generate?grant_type=client_credentials"
-	req, err := http.NewRequest(http.MethodGet, url, strings.NewReader(encoded))
+func (s *Service) GenerateNewAccessToken() (string, error) {
+	err := s.updateToken()
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("authorization", "Basic "+encoded)
-	req.Header.Add("cache-control", "no-cache")
+	return s.token, nil
+}
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	res, err := client.Do(req)
-	if res != nil {
-		defer res.Body.Close()
+func (s *Service) checkToken() error {
+	if len(s.token) == 0 || time.Since(s.checkPoint) > s.TokenLiveDuration {
+		return ErrTokenIsExpired
 	}
+	return nil
+}
+
+// Generate Mpesa Daraja Access Token
+func (s *Service) updateToken() error {
+	url := s.endpoint + "oauth/v1/generate?grant_type=client_credentials"
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return "", fmt.Errorf("could not send auth request: %v", err)
+		return err
+	}
+	req.Header.Add(authHeader, s.authHeader)
+	//req.Header.Add("cache-control", "no-cache") // TODO: Do we need this header?
+
+	client := s.HTTPClient
+	if client == nil {
+		client = http.DefaultClient
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("could not send auth request: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(resp.Status)
 	}
 
 	var authResponse authResponse
-	err = json.NewDecoder(res.Body).Decode(&authResponse)
-	if err != nil {
-		return "", fmt.Errorf("could not decode auth response: %v", err)
+	dec := json.NewDecoder(resp.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&authResponse); err != nil {
+		return fmt.Errorf("could not decode auth response: %v", err)
 	}
 
-	accessToken := authResponse.AccessToken
-	log.Println("Received access_token: ", accessToken)
-	return accessToken, nil
+	if authResponse.ErrorCode != nil || authResponse.ErrorMessage != nil {
+		return fmt.Errorf("received error: %v", error(authResponse))
+	}
+
+	s.token = authResponse.AccessToken
+	if authResponse.ExpiresIn != "" {
+		expSecs, err := strconv.Atoi(authResponse.ExpiresIn)
+		if err == nil {
+			s.TokenLiveDuration = time.Second * time.Duration(expSecs)
+		}
+	}
+	s.checkPoint = time.Now()
+	return nil
 }
 
+/*
 // STKPushSimulation sends an STK push?
 func (s Service) MPESAExpressSimulation(mpesaExpress MPESAExpress) (string, error) {
 	body, err := json.Marshal(mpesaExpress)
@@ -108,28 +159,58 @@ func (s Service) MPESAExpressTransactionStatus(mpesaExpress MPESAExpress) (strin
 	url := s.baseURL() + "mpesa/stkpushquery/v1/query"
 	return s.newStringRequest(url, body, headers)
 }
+*/
 
-// C2BRegisterURL requests
-func (s Service) C2BRegisterURL(c2BRegisterURL C2BRegisterURL) (string, error) {
-	body, err := json.Marshal(c2BRegisterURL)
-	if err != nil {
-		return "", err
+func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) error {
+	if s.checkToken() != nil {
+		if err := s.updateToken(); err != nil {
+			return fmt.Errorf("update auth token: %v", err)
+		}
 	}
 
-	auth, err := s.authenticate()
+	data, err := json.Marshal(reqBody)
 	if err != nil {
-		return "", nil
+		return fmt.Errorf("encode to json: %v", err)
 	}
 
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	headers["Authorization"] = "Bearer " + auth
-	headers["Cache-Control"] = "no-cache"
+	r, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return err
+	}
 
-	url := s.baseURL() + "mpesa/c2b/v1/registerurl"
-	return s.newStringRequest(url, body, headers)
+	r.Header.Add(authHeader, "Bearer "+s.token)
+	r.Header.Add(contentTypeHeader, "application/json")
+
+	resp, err := s.HTTPClient.Do(r)
+	if err != nil {
+		return fmt.Errorf("could not send request: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(resp.Status)
+	}
+
+	dec := json.NewDecoder(resp.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(dest); err != nil {
+		return fmt.Errorf("could not decode response: %v", err)
+	}
+
+	return nil
 }
 
+// C2BRegisterURL requests
+func (s *Service) C2BRegisterURL(c2BRegisterURL C2BRegisterURL) (*C2BRegisterURLResponse, error) {
+	url := s.endpoint + "mpesa/c2b/v1/registerurl"
+	var res C2BRegisterURLResponse
+	err := s.roundTrip(c2BRegisterURL, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+/*
 // C2BSimulation sends a new request
 func (s Service) C2BSimulation(c2b C2B) (string, error) {
 	body, err := json.Marshal(c2b)
@@ -262,10 +343,4 @@ func (s Service) newStringRequest(url string, body []byte, headers map[string]st
 	log.Println("Response received")
 	return string(stringBody), nil
 }
-
-func (s Service) baseURL() string {
-	if s.Env == PRODUCTION {
-		return "https://api.safaricom.co.ke/"
-	}
-	return "https://sandbox.safaricom.co.ke/"
-}
+*/
