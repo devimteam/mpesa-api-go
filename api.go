@@ -24,6 +24,12 @@ const (
 
 var ErrTokenIsExpired = errors.New("token was expired")
 
+const TimestampLayout = "20060102150405"
+
+func Timestamp(t time.Time) string {
+	return t.Format(TimestampLayout)
+}
+
 // Service is an Mpesa Service
 type Service struct {
 	appKey    string
@@ -57,9 +63,11 @@ func New(key, secret string, endpoint string) *Service {
 		endpoint:          endpoint,
 		authHeader:        serviceAuthHeader,
 		TokenLiveDuration: defaultTokenLive,
+		HTTPClient:        http.DefaultClient,
 	}
 }
 
+// Usually, service generate tokens on its own and you should not regenerate them manually.
 func (s *Service) GenerateNewAccessToken() (string, error) {
 	err := s.updateToken()
 	if err != nil {
@@ -83,7 +91,6 @@ func (s *Service) updateToken() error {
 		return err
 	}
 	req.Header.Add(authHeader, s.authHeader)
-	//req.Header.Add("cache-control", "no-cache") // TODO: Do we need this header?
 
 	client := s.HTTPClient
 	if client == nil {
@@ -93,19 +100,19 @@ func (s *Service) updateToken() error {
 	if err != nil {
 		return fmt.Errorf("could not send auth request: %v", err)
 	}
+	dec := json.NewDecoder(resp.Body)
+	dec.DisallowUnknownFields()
 	if resp.StatusCode != http.StatusOK {
+		var apiErr errorResponse
+		if err := dec.Decode(&apiErr); err == nil {
+			return error(apiErr)
+		}
 		return errors.New(resp.Status)
 	}
 
 	var authResponse authResponse
-	dec := json.NewDecoder(resp.Body)
-	dec.DisallowUnknownFields()
 	if err := dec.Decode(&authResponse); err != nil {
 		return fmt.Errorf("could not decode auth response: %v", err)
-	}
-
-	if authResponse.ErrorCode != nil || authResponse.ErrorMessage != nil {
-		return fmt.Errorf("received error: %v", error(authResponse))
 	}
 
 	s.token = authResponse.AccessToken
@@ -118,48 +125,6 @@ func (s *Service) updateToken() error {
 	s.checkPoint = time.Now()
 	return nil
 }
-
-/*
-// STKPushSimulation sends an STK push?
-func (s Service) MPESAExpressSimulation(mpesaExpress MPESAExpress) (string, error) {
-	body, err := json.Marshal(mpesaExpress)
-	if err != nil {
-		return "", nil
-	}
-	auth, err := s.authenticate()
-	if err != nil {
-		return "", nil
-	}
-
-	headers := make(map[string]string)
-	headers["content-type"] = "application/json"
-	headers["authorization"] = "Bearer " + auth
-	headers["cache-control"] = "no-cache"
-
-	url := s.baseURL() + "mpesa/stkpush/v1/processrequest"
-	return s.newStringRequest(url, body, headers)
-}
-
-// STKPushTransactionStatus gets a status
-func (s Service) MPESAExpressTransactionStatus(mpesaExpress MPESAExpress) (string, error) {
-	body, err := json.Marshal(mpesaExpress)
-	if err != nil {
-		return "", nil
-	}
-
-	auth, err := s.authenticate()
-	if err != nil {
-		return "", nil
-	}
-
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	headers["Authorization"] = "Bearer " + auth
-
-	url := s.baseURL() + "mpesa/stkpushquery/v1/query"
-	return s.newStringRequest(url, body, headers)
-}
-*/
 
 func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) error {
 	if s.checkToken() != nil {
@@ -186,12 +151,20 @@ func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) e
 		return fmt.Errorf("could not send request: %v", err)
 	}
 	defer resp.Body.Close()
+	/*{
+		data, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(data))
+	}*/
+	dec := json.NewDecoder(resp.Body)
+	dec.DisallowUnknownFields()
 	if resp.StatusCode != http.StatusOK {
+		var apiErr errorResponse
+		if err := dec.Decode(&apiErr); err == nil {
+			return error(apiErr)
+		}
 		return errors.New(resp.Status)
 	}
 
-	dec := json.NewDecoder(resp.Body)
-	dec.DisallowUnknownFields()
 	if err := dec.Decode(dest); err != nil {
 		return fmt.Errorf("could not decode response: %v", err)
 	}
@@ -199,7 +172,6 @@ func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) e
 	return nil
 }
 
-// C2BRegisterURL requests
 func (s *Service) C2BRegisterURL(c2BRegisterURL C2BRegisterURL) (*C2BRegisterURLResponse, error) {
 	url := s.endpoint + "mpesa/c2b/v1/registerurl"
 	var res C2BRegisterURLResponse
@@ -210,49 +182,47 @@ func (s *Service) C2BRegisterURL(c2BRegisterURL C2BRegisterURL) (*C2BRegisterURL
 	return &res, nil
 }
 
+func (s *Service) C2BSimulation(c2b C2B) (*C2BResponse, error) {
+	url := s.endpoint + "mpesa/c2b/v1/simulate"
+	var res C2BResponse
+	err := s.roundTrip(c2b, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (s *Service) B2CRequest(b2c B2C) (*B2CResponse, error) {
+	url := s.endpoint + "mpesa/b2c/v1/paymentrequest"
+	var res B2CResponse
+	err := s.roundTrip(b2c, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (s *Service) TransactionStatus(status TransactionStatus) (*TransactionStatusResponse, error) {
+	url := s.endpoint + "mpesa/transactionstatus/v1/query"
+	var res TransactionStatusResponse
+	err := s.roundTrip(status, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (s *Service) MPESAOnlinePayment(payment Payment) (*PaymentResponse, error) {
+	url := s.endpoint + "mpesa/stkpush/v1/processrequest"
+	var res PaymentResponse
+	err := s.roundTrip(payment, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 /*
-// C2BSimulation sends a new request
-func (s Service) C2BSimulation(c2b C2B) (string, error) {
-	body, err := json.Marshal(c2b)
-	if err != nil {
-		return "", err
-	}
-
-	auth, err := s.authenticate()
-	if err != nil {
-		return "", nil
-	}
-
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	headers["Authorization"] = "Bearer " + auth
-	headers["cache-control"] = "no-cache"
-
-	url := s.baseURL() + "mpesa/c2b/v1/simulate"
-	return s.newStringRequest(url, body, headers)
-}
-
-// B2CRequest sends a new request
-func (s Service) B2CRequest(b2c B2C) (string, error) {
-	body, err := json.Marshal(b2c)
-	if err != nil {
-		return "", err
-	}
-
-	auth, err := s.authenticate()
-	if err != nil {
-		return "", nil
-	}
-
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	headers["Authorization"] = "Bearer " + auth
-	headers["cache-control"] = "no-cache"
-
-	url := s.baseURL() + "mpesa/b2c/v1/paymentrequest"
-	return s.newStringRequest(url, body, headers)
-}
-
 // B2BRequest sends a new request
 func (s Service) B2BRequest(b2b B2B) (string, error) {
 	body, err := json.Marshal(b2b)
