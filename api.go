@@ -222,6 +222,16 @@ func (s *Service) MPESAOnlinePayment(payment Payment) (*PaymentResponse, error) 
 	return &res, nil
 }
 
+func (s *Service) Reversal(reversal Reversal) (*ReversalResponse, error) {
+	url := s.endpoint + "mpesa/reversal/v1/request"
+	var res ReversalResponse
+	err := s.roundTrip(reversal, &res, url)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 /*
 // B2BRequest sends a new request
 func (s Service) B2BRequest(b2b B2B) (string, error) {
@@ -240,27 +250,6 @@ func (s Service) B2BRequest(b2b B2B) (string, error) {
 	headers["cache-control"] = "no-cache"
 
 	url := s.baseURL() + "mpesa/b2b/v1/paymentrequest"
-	return s.newStringRequest(url, body, headers)
-}
-
-// Reversal requests a reversal?
-func (s Service) Reversal(reversal Reversal) (string, error) {
-	body, err := json.Marshal(reversal)
-	if err != nil {
-		return "", err
-	}
-
-	auth, err := s.authenticate()
-	if err != nil {
-		return "", nil
-	}
-
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	headers["Authorization"] = "Bearer " + auth
-	headers["cache-control"] = "no-cache"
-
-	url := s.baseURL() + "safaricom/reversal/v1/request"
 	return s.newStringRequest(url, body, headers)
 }
 

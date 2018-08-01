@@ -224,21 +224,36 @@ type C2BRegisterURL struct {
 
 type C2BRegisterURLResponse GenericResponse
 
-/*
 type Reversal struct {
-	Initiator              string
-	SecurityCredential     string
-	CommandID              string
-	TransactionID          string
-	Amount                 string
-	ReceiverParty          string
+	// Takes only 'TransactionReversal' Command id
+	CommandID string
+	// Organization receiving the transaction (shortcode)
+	ReceiverParty string
+	// Type of organization receiving the transaction
+	// Organization Identifier on M-Pesa
 	ReceiverIdentifierType string
-	QueueTimeOutURL        string
-	ResultURL              string
-	Remarks                string
-	Occassion              string
+	// Comments that are sent along with the transaction.
+	// Up to 100 characters.
+	Remarks string
+	// The name of Initiator to initiating  the request
+	// This is the credential/username used to authenticate the transaction request
+	Initiator string
+	// Encrypted Credential of user getting transaction amount
+	// Encrypted password for the initiator to authenticate the transaction request
+	SecurityCredential string
+	// The path that stores information of time out transaction
+	// https://ip or domain:port/path
+	QueueTimeOutURL string
+	// Organization Receiving the funds // WTF??
+	TransactionID string
+	// Optional Parameter
+	// Up to 100 characters
+	Occasion string
 }
 
+type ReversalResponse GenericResponse
+
+/*
 type BalanceInquiry struct {
 	Initiator          string
 	SecurityCredential string
