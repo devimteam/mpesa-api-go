@@ -210,7 +210,7 @@ type PaymentCallback struct {
 			CheckoutRequestID string
 			// This is a numeric status code that indicates the status of the transaction processing.
 			// 0 means successful processing and any other code means an error occurred or the transaction failed.
-			ResultCode string
+			ResultCode int
 			// Result description is a message from the API that gives the status of the request processing,
 			// usually maps to a specific ResultCode value.
 			// It can be a Success processing message or an error description message.
