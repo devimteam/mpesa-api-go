@@ -72,7 +72,7 @@ func TestService_MPESAOnlinePayment(t *testing.T) {
 		PartyB:            mpesaOnlineShortcode,
 		PhoneNumber:       testMSISDN,
 		CallBackURL:       callbackUrl,
-		AccountReference:  "testing",
+		AccountReference:  "",
 		TransactionDesc:   "testing",
 	})
 	wg.Done()
