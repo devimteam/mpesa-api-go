@@ -101,7 +101,13 @@ type B2CCallback struct {
 		OriginatorConversationID string
 		ConversationID           string
 		TransactionID            string
-		ReferenceData            json.RawMessage
+		ResultParameters         struct {
+			ResultParameter []struct {
+				Key   string
+				Value json.RawMessage
+			}
+		}
+		ReferenceData json.RawMessage
 	}
 }
 
@@ -194,20 +200,29 @@ type PaymentResponse struct {
 }
 
 type PaymentCallback struct {
-	Body json.RawMessage
-	// This is a global unique Identifier for any submitted payment request.
-	// This is the same value returned in the acknowledgement message of the initial request.
-	MerchantRequestID string
-	// This is a global unique identifier of the processed checkout transaction request.
-	// This is the same value returned in the acknowledgement message of the initial request.
-	CheckoutRequestID string
-	// This is a numeric status code that indicates the status of the transaction processing.
-	// 0 means successful processing and any other code means an error occurred or the transaction failed.
-	ResultCode string
-	// Result description is a message from the API that gives the status of the request processing,
-	// usually maps to a specific ResultCode value.
-	// It can be a Success processing message or an error description message.
-	ResultDesc string
+	Body struct {
+		STKCallback struct {
+			// This is a global unique Identifier for any submitted payment request.
+			// This is the same value returned in the acknowledgement message of the initial request.
+			MerchantRequestID string
+			// This is a global unique identifier of the processed checkout transaction request.
+			// This is the same value returned in the acknowledgement message of the initial request.
+			CheckoutRequestID string
+			// This is a numeric status code that indicates the status of the transaction processing.
+			// 0 means successful processing and any other code means an error occurred or the transaction failed.
+			ResultCode string
+			// Result description is a message from the API that gives the status of the request processing,
+			// usually maps to a specific ResultCode value.
+			// It can be a Success processing message or an error description message.
+			ResultDesc       string
+			CallbackMetadata struct {
+				Item []struct {
+					Name  string
+					Value json.RawMessage `json:",omitempty"`
+				}
+			} `json:",omitempty"`
+		} `json:"stkCallback"`
+	}
 }
 
 type C2BRegisterURL struct {
