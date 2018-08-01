@@ -48,7 +48,7 @@ func TestService_B2CRequest(t *testing.T) {
 		Remarks:            "testing",
 		QueueTimeOutURL:    callbackUrl,
 		ResultURL:          callbackUrl,
-		Occassion:          "",
+		Occasion:           "",
 	})
 	wg.Done()
 	if err != nil {
