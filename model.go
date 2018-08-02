@@ -266,7 +266,17 @@ type Reversal struct {
 	Occasion string
 }
 
-type ReversalResponse GenericResponse
+type ReversalResponse struct {
+	Result struct {
+		ResultType               int
+		ResultCode               int
+		ResultDesc               string
+		OriginatorConversationID string
+		ConversationID           string
+		TransactionID            string
+		ReferenceData            json.RawMessage
+	}
+}
 
 /*
 type BalanceInquiry struct {
