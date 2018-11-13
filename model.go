@@ -17,13 +17,13 @@ type authResponse struct {
 }
 
 //easyjson:json
-type errorResponse struct {
+type APIError struct {
 	RequestId    *string `json:"requestId"`
 	ErrorCode    *string `json:"errorCode"`
 	ErrorMessage *string `json:"errorMessage"`
 }
 
-func (r errorResponse) Error() string {
+func (r APIError) Error() string {
 	return fmt.Sprintf("%s - %s", sp(r.ErrorCode), sp(r.ErrorMessage))
 }
 

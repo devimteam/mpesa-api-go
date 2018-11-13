@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -98,12 +100,12 @@ func (s *Service) updateToken() error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("could not send auth request: %v", err)
+		return errors.Wrap(err, "could not send auth request")
 	}
 	dec := json.NewDecoder(resp.Body)
 	dec.DisallowUnknownFields()
 	if resp.StatusCode != http.StatusOK {
-		var apiErr errorResponse
+		var apiErr APIError
 		if err := dec.Decode(&apiErr); err == nil {
 			return error(apiErr)
 		}
@@ -112,7 +114,7 @@ func (s *Service) updateToken() error {
 
 	var authResponse authResponse
 	if err := dec.Decode(&authResponse); err != nil {
-		return fmt.Errorf("could not decode auth response: %v", err)
+		return errors.Wrap(err, "could not decode auth response")
 	}
 
 	s.token = authResponse.AccessToken
@@ -129,14 +131,16 @@ func (s *Service) updateToken() error {
 func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) error {
 	if s.checkToken() != nil {
 		if err := s.updateToken(); err != nil {
-			return fmt.Errorf("update auth token: %v", err)
+			return errors.Wrap(err, "update auth token")
 		}
 	}
 
 	data, err := json.Marshal(reqBody)
 	if err != nil {
-		return fmt.Errorf("encode to json: %v", err)
+		return errors.Wrap(err, "encode to json")
 	}
+
+	fmt.Println(string(data))
 
 	r, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
@@ -148,25 +152,25 @@ func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) e
 
 	resp, err := s.HTTPClient.Do(r)
 	if err != nil {
-		return fmt.Errorf("could not send request: %v", err)
+		return errors.Wrap(err, "could not send request")
 	}
 	defer resp.Body.Close()
-	/*{
+	{
 		data, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(data))
-	}*/
+	}
 	dec := json.NewDecoder(resp.Body)
 	dec.DisallowUnknownFields()
 	if resp.StatusCode != http.StatusOK {
-		var apiErr errorResponse
+		var apiErr APIError
 		if err := dec.Decode(&apiErr); err == nil {
-			return error(apiErr)
+			return apiErr
 		}
 		return errors.New(resp.Status)
 	}
 
 	if err := dec.Decode(dest); err != nil {
-		return fmt.Errorf("could not decode response: %v", err)
+		return errors.Wrap(err, "could not decode response")
 	}
 
 	return nil
