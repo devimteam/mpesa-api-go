@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -140,7 +138,7 @@ func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) e
 		return errors.Wrap(err, "encode to json")
 	}
 
-	fmt.Println(string(data))
+	//fmt.Println(string(data))
 
 	r, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
@@ -155,10 +153,10 @@ func (s *Service) roundTrip(reqBody interface{}, dest interface{}, url string) e
 		return errors.Wrap(err, "could not send request")
 	}
 	defer resp.Body.Close()
-	{
+	/*{
 		data, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(data))
-	}
+	}*/
 	dec := json.NewDecoder(resp.Body)
 	dec.DisallowUnknownFields()
 	if resp.StatusCode != http.StatusOK {
