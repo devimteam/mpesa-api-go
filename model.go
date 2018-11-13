@@ -297,6 +297,44 @@ type ReversalResponse struct {
 	}
 }
 
+//easyjson:json
+type C2BValidationResponse struct {
+	TransactionType string
+	TransID         string
+	// example: "20170727104247"
+	TransTime string
+	// example: "10.00"
+	TransAmount       string
+	BusinessShortCode string
+	BillRefNumber     string
+	InvoiceNumber     string
+	OrgAccountBalance string
+	ThirdPartyTransID string
+	MSISDN            string
+	FirstName         string
+	MiddleName        string
+	LastName          string
+}
+
+//easyjson:json
+type C2BConformationResponse struct {
+	TransactionType string
+	TransID         string
+	// example: "20170727104247"
+	TransTime string
+	// example: "10.00"
+	TransAmount       string
+	BusinessShortCode string
+	BillRefNumber     string
+	InvoiceNumber     string
+	OrgAccountBalance string
+	ThirdPartyTransID string
+	MSISDN            string
+	FirstName         string
+	MiddleName        string
+	LastName          string
+}
+
 /*
 type BalanceInquiry struct {
 	Initiator          string

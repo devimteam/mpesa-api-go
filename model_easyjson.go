@@ -1735,7 +1735,222 @@ func (v *GenericResponse) UnmarshalJSON(data []byte) error {
 func (v *GenericResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo9(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(in *jlexer.Lexer, out *C2BResponse) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(in *jlexer.Lexer, out *C2BValidationResponse) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "TransactionType":
+			out.TransactionType = string(in.String())
+		case "TransID":
+			out.TransID = string(in.String())
+		case "TransTime":
+			out.TransTime = string(in.String())
+		case "TransAmount":
+			out.TransAmount = string(in.String())
+		case "BusinessShortCode":
+			out.BusinessShortCode = string(in.String())
+		case "BillRefNumber":
+			out.BillRefNumber = string(in.String())
+		case "InvoiceNumber":
+			out.InvoiceNumber = string(in.String())
+		case "OrgAccountBalance":
+			out.OrgAccountBalance = string(in.String())
+		case "ThirdPartyTransID":
+			out.ThirdPartyTransID = string(in.String())
+		case "MSISDN":
+			out.MSISDN = string(in.String())
+		case "FirstName":
+			out.FirstName = string(in.String())
+		case "MiddleName":
+			out.MiddleName = string(in.String())
+		case "LastName":
+			out.LastName = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(out *jwriter.Writer, in C2BValidationResponse) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"TransactionType\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransactionType))
+	}
+	{
+		const prefix string = ",\"TransID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransID))
+	}
+	{
+		const prefix string = ",\"TransTime\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransTime))
+	}
+	{
+		const prefix string = ",\"TransAmount\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransAmount))
+	}
+	{
+		const prefix string = ",\"BusinessShortCode\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.BusinessShortCode))
+	}
+	{
+		const prefix string = ",\"BillRefNumber\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.BillRefNumber))
+	}
+	{
+		const prefix string = ",\"InvoiceNumber\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.InvoiceNumber))
+	}
+	{
+		const prefix string = ",\"OrgAccountBalance\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.OrgAccountBalance))
+	}
+	{
+		const prefix string = ",\"ThirdPartyTransID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.ThirdPartyTransID))
+	}
+	{
+		const prefix string = ",\"MSISDN\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.MSISDN))
+	}
+	{
+		const prefix string = ",\"FirstName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.FirstName))
+	}
+	{
+		const prefix string = ",\"MiddleName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.MiddleName))
+	}
+	{
+		const prefix string = ",\"LastName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.LastName))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v C2BValidationResponse) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v C2BValidationResponse) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *C2BValidationResponse) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *C2BValidationResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(l, v)
+}
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(in *jlexer.Lexer, out *C2BResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1772,7 +1987,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(out *jwriter.Writer, in C2BResponse) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(out *jwriter.Writer, in C2BResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1822,27 +2037,27 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v C2BResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v C2BResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo10(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *C2BResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *C2BResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo10(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(in *jlexer.Lexer, out *C2BRegisterURLResponse) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(in *jlexer.Lexer, out *C2BRegisterURLResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1879,7 +2094,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(out *jwriter.Writer, in C2BRegisterURLResponse) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(out *jwriter.Writer, in C2BRegisterURLResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1929,27 +2144,27 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v C2BRegisterURLResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v C2BRegisterURLResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo11(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *C2BRegisterURLResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *C2BRegisterURLResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo11(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(in *jlexer.Lexer, out *C2BRegisterURL) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(in *jlexer.Lexer, out *C2BRegisterURL) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1986,7 +2201,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(out *jwriter.Writer, in C2BRegisterURL) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(out *jwriter.Writer, in C2BRegisterURL) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2036,27 +2251,242 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v C2BRegisterURL) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v C2BRegisterURL) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo12(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *C2BRegisterURL) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *C2BRegisterURL) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo12(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(in *jlexer.Lexer, out *C2B) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(in *jlexer.Lexer, out *C2BConformationResponse) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "TransactionType":
+			out.TransactionType = string(in.String())
+		case "TransID":
+			out.TransID = string(in.String())
+		case "TransTime":
+			out.TransTime = string(in.String())
+		case "TransAmount":
+			out.TransAmount = string(in.String())
+		case "BusinessShortCode":
+			out.BusinessShortCode = string(in.String())
+		case "BillRefNumber":
+			out.BillRefNumber = string(in.String())
+		case "InvoiceNumber":
+			out.InvoiceNumber = string(in.String())
+		case "OrgAccountBalance":
+			out.OrgAccountBalance = string(in.String())
+		case "ThirdPartyTransID":
+			out.ThirdPartyTransID = string(in.String())
+		case "MSISDN":
+			out.MSISDN = string(in.String())
+		case "FirstName":
+			out.FirstName = string(in.String())
+		case "MiddleName":
+			out.MiddleName = string(in.String())
+		case "LastName":
+			out.LastName = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(out *jwriter.Writer, in C2BConformationResponse) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"TransactionType\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransactionType))
+	}
+	{
+		const prefix string = ",\"TransID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransID))
+	}
+	{
+		const prefix string = ",\"TransTime\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransTime))
+	}
+	{
+		const prefix string = ",\"TransAmount\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.TransAmount))
+	}
+	{
+		const prefix string = ",\"BusinessShortCode\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.BusinessShortCode))
+	}
+	{
+		const prefix string = ",\"BillRefNumber\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.BillRefNumber))
+	}
+	{
+		const prefix string = ",\"InvoiceNumber\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.InvoiceNumber))
+	}
+	{
+		const prefix string = ",\"OrgAccountBalance\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.OrgAccountBalance))
+	}
+	{
+		const prefix string = ",\"ThirdPartyTransID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.ThirdPartyTransID))
+	}
+	{
+		const prefix string = ",\"MSISDN\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.MSISDN))
+	}
+	{
+		const prefix string = ",\"FirstName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.FirstName))
+	}
+	{
+		const prefix string = ",\"MiddleName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.MiddleName))
+	}
+	{
+		const prefix string = ",\"LastName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.LastName))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v C2BConformationResponse) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v C2BConformationResponse) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *C2BConformationResponse) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *C2BConformationResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(l, v)
+}
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(in *jlexer.Lexer, out *C2B) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2095,7 +2525,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(out *jwriter.Writer, in C2B) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(out *jwriter.Writer, in C2B) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2155,27 +2585,27 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v C2B) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v C2B) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo13(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *C2B) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *C2B) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo13(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(in *jlexer.Lexer, out *B2CResponse) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(in *jlexer.Lexer, out *B2CResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2212,7 +2642,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(out *jwriter.Writer, in B2CResponse) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(out *jwriter.Writer, in B2CResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2262,27 +2692,27 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v B2CResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v B2CResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo14(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *B2CResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *B2CResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo14(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(l, v)
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(in *jlexer.Lexer, out *B2CCallback) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo17(in *jlexer.Lexer, out *B2CCallback) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2313,7 +2743,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(out *jwriter.Writer, in B2CCallback) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo17(out *jwriter.Writer, in B2CCallback) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2333,25 +2763,25 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v B2CCallback) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo17(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v B2CCallback) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo15(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo17(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *B2CCallback) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo17(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *B2CCallback) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo15(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo17(l, v)
 }
 func easyjsonC80ae7adDecode5(in *jlexer.Lexer, out *struct {
 	ResultType               int
@@ -2679,7 +3109,7 @@ func easyjsonC80ae7adEncode7(out *jwriter.Writer, in struct {
 	}
 	out.RawByte('}')
 }
-func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(in *jlexer.Lexer, out *B2C) {
+func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo18(in *jlexer.Lexer, out *B2C) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2728,7 +3158,7 @@ func easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(out *jwriter.Writer, in B2C) {
+func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo18(out *jwriter.Writer, in B2C) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2838,23 +3268,23 @@ func easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v B2C) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(&w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo18(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v B2C) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo16(w, v)
+	easyjsonC80ae7adEncodeGithubComDevimteamMpesaApiGo18(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *B2C) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(&r, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo18(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *B2C) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo16(l, v)
+	easyjsonC80ae7adDecodeGithubComDevimteamMpesaApiGo18(l, v)
 }
